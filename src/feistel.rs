@@ -21,7 +21,7 @@
 //! with this library.
 
 use core::hash::Hasher;
-use wyhash::WyHash;
+use ahash::AHasher;
 
 /// Permutor gives you back a permutation iterator that returns a random permutation over
 /// [0, max) (0 inclusive to max exclusive).
@@ -169,7 +169,7 @@ impl FeistelNetwork {
         let right_bytes = u128_to_16slice(right);
         let round_bytes = u8_to_1slice(round);
 
-        let mut hasher = WyHash::default();
+        let mut hasher = AHasher::default();
         hasher.write(&key[..]);
         hasher.write(&right_bytes[..]);
         hasher.write(&round_bytes[..]);
