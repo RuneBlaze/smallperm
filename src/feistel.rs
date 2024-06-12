@@ -146,7 +146,7 @@ impl FeistelNetwork {
             right_mask,
             left_mask,
             key,
-            rounds: 32,
+            rounds: 8,
         }
     }
 
