@@ -141,12 +141,14 @@ impl FeistelNetwork {
             right_mask |= 1 << i;
         }
         let left_mask = right_mask << half_width;
+        let num_rounds = 6 + (60 / integer_log2(max_value).unwrap().max(4));
+        let num_rounds = num_rounds.min(32);
         FeistelNetwork {
             half_width: half_width as u128,
             right_mask,
             left_mask,
             key,
-            rounds: 8,
+            rounds: num_rounds as u8,
         }
     }
 
