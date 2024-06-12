@@ -1,0 +1,1 @@
+Contains code from: https://github.com/asimihsan/permutation-iterator-rs

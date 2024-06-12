@@ -1,0 +1,17 @@
+[package]
+name = "smallperm"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "smallperm"
+crate-type = ["cdylib"]
+
+[dependencies]
+num-prime = "0.4.4"
+pyo3 = { version = "0.17.3", features = ["extension-module"] }
+rand = "0.8.5"
+rand-unique = "0.2.2"
+rand_xoshiro = "0.6.0"
+wyhash = "0.5.0"
