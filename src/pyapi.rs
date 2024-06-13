@@ -18,9 +18,7 @@ impl PseudoRandomPermutation {
     fn __iter__(&self) -> Self {
         let mut new_inner = self.inner.clone();
         new_inner.values_returned = 0;
-        PseudoRandomPermutation {
-            inner: new_inner,
-        }
+        PseudoRandomPermutation { inner: new_inner }
     }
 
     fn __next__(mut slf: PyRefMut<'_, Self>) -> Option<u128> {
