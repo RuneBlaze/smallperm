@@ -9,10 +9,11 @@ name = "smallperm"
 crate-type = ["cdylib"]
 
 [dependencies]
-ahash = "0.8.11"
+highway = "1.1.0"
 pyo3 = { version = "0.17.3", features = ["extension-module", "abi3", "abi3-py37"] }
 
 [dev-dependencies]
+ahash = "0.8.11"
 quickcheck = "1"
 quickcheck_macros = "1"
 criterion = { version = "0.4", features = ["html_reports"] }

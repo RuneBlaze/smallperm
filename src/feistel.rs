@@ -12,9 +12,8 @@
 
 // Modified by RuneBlaze, 2024.
 
-use ahash::{AHasher, RandomState};
+use highway::{HighwayHasher, Key};
 use core::hash::Hasher;
-use std::hash::{BuildHasher, Hash};
 
 #[derive(Debug, Clone)]
 pub struct Permutor {
@@ -175,10 +174,7 @@ impl FeistelNetwork {
     fn round_function(&self, right: u128, round: u8, key: [u8; 32], mask: u128) -> u128 {
         let right_bytes = u128::to_be_bytes(right);
         let round_bytes = u8_to_1slice(round);
-
-        let (k0, k1, k2, k3) = (self.ks[0], self.ks[1], self.ks[2], self.ks[3]);
-
-        let mut hasher = RandomState::with_seeds(k0, k1, k2, k3).build_hasher();
+        let mut hasher = HighwayHasher::new(Key(self.ks));
         hasher.write(&key[..]);
         hasher.write(&right_bytes[..]);
         hasher.write(&round_bytes[..]);
