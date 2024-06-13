@@ -17,6 +17,10 @@ Small library to generate permutations of a list of elements using pseudo-random
 - **Usage**: Iterate over the instance to get the next element of the permutation.
   - Example: `list(PseudoRandomPermutation(42, 0xDEADBEEF))`
 
+- **O(1) forward/backward mapping**:
+  - `forward(i: int) -> int`: Returns the `i`-th element of the permutation.
+  - `backward(el: int) -> int`: Returns the index of `el` in the permutation.
+
 
 ## Acknowledgements
 
