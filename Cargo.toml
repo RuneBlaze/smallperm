@@ -9,8 +9,8 @@ name = "smallperm"
 crate-type = ["cdylib"]
 
 [dependencies]
-highway = "1.1.0"
 pyo3 = { version = "0.17.3", features = ["extension-module", "abi3", "abi3-py37"] }
+rustc_data_structures = "0.1.2"
 
 [dev-dependencies]
 ahash = "0.8.11"

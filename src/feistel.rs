@@ -12,7 +12,7 @@
 
 // Modified by RuneBlaze, 2024.
 
-use highway::{HighwayHasher, Key};
+use rustc_data_structures::fx::FxHasher;
 use core::hash::Hasher;
 
 #[derive(Debug, Clone)]
@@ -106,8 +106,6 @@ pub struct FeistelNetwork {
     key: [u8; 32],
 
     rounds: u8,
-
-    ks: [u64; 4],
 }
 
 impl FeistelNetwork {
@@ -124,20 +122,12 @@ impl FeistelNetwork {
         let left_mask = right_mask << half_width;
         let num_rounds = 8 + (60 / integer_log2(max_value).unwrap().max(4));
         let num_rounds = num_rounds.min(32);
-        // hard-coded keys for now
-        let (k0, k1, k2, k3) = (
-            0x1234_5678_9ABC_DEF0 ^ 0xDEADBEEF_FEE1DEAD,
-            0x2345_6789_ABCD_EF01 ^ 0xDEADBEEF_FEE1DEAD,
-            0x3456_789A_BCDE_F012,
-            0x4567_89AB_CDEF_0123,
-        );
         FeistelNetwork {
             half_width: half_width as u128,
             right_mask,
             left_mask,
             key,
             rounds: num_rounds as u8,
-            ks: [k0, k1, k2, k3],
         }
     }
 
@@ -174,7 +164,7 @@ impl FeistelNetwork {
     fn round_function(&self, right: u128, round: u8, key: [u8; 32], mask: u128) -> u128 {
         let right_bytes = u128::to_be_bytes(right);
         let round_bytes = u8_to_1slice(round);
-        let mut hasher = HighwayHasher::new(Key(self.ks));
+        let mut hasher = FxHasher::default();
         hasher.write(&key[..]);
         hasher.write(&right_bytes[..]);
         hasher.write(&round_bytes[..]);
