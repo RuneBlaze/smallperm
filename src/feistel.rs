@@ -123,12 +123,13 @@ impl FeistelNetwork {
             right_mask |= 1 << i;
         }
         let left_mask = right_mask << half_width;
+        let xor_mask = 0xDEADBEEF_FEE1DEAD;
         let num_rounds = 8 + (60 / integer_log2(max_value).unwrap().max(4));
         let num_rounds = num_rounds.min(32);
-        let k0 = u64::from_be_bytes(key[..8].try_into().unwrap());
-        let k1 = u64::from_be_bytes(key[8..16].try_into().unwrap());
-        let k2 = u64::from_be_bytes(key[16..24].try_into().unwrap());
-        let k3 = u64::from_be_bytes(key[24..32].try_into().unwrap());
+        let k0 = u64::from_be_bytes(key[..8].try_into().unwrap()) ^ xor_mask;
+        let k1 = u64::from_be_bytes(key[8..16].try_into().unwrap()) ^ xor_mask;
+        let k2 = u64::from_be_bytes(key[16..24].try_into().unwrap()) ^ xor_mask;
+        let k3 = u64::from_be_bytes(key[24..32].try_into().unwrap()) ^ xor_mask;
 
         FeistelNetwork {
             half_width: half_width as u128,
