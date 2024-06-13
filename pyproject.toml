@@ -4,12 +4,15 @@ build-backend = "maturin"
 
 [project]
 name = "smallperm"
-version = "0.1.0b3"
+version = "0.1.0b6"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Rust",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
-
-
+description = "Efficient O(1)-space pseudorandom permutation for large scale shuffling"
+license = { file = "LICENSE" }
+authors = [
+    {name = "RuneBlaze", email = "runeblaze@protonmail.com"}
+]
