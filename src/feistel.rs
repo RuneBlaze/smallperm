@@ -20,7 +20,7 @@ use std::hash::{BuildHasher, Hash};
 pub struct Permutor {
     feistel: FeistelNetwork,
     pub max: u128,
-    values_returned: u128,
+    pub values_returned: u128,
 }
 
 impl Permutor {
