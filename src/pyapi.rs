@@ -53,4 +53,5 @@ impl PseudoRandomPermutation {
             panic!("index out of range");
         }
         self.inner.backward(permuted_ix)
-    }}
+    }
+}

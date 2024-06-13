@@ -12,8 +12,9 @@
 
 // Modified by RuneBlaze, 2024.
 
-use ahash::AHasher;
+use ahash::{AHasher, RandomState};
 use core::hash::Hasher;
+use std::hash::{BuildHasher, Hash};
 
 #[derive(Debug, Clone)]
 pub struct Permutor {
@@ -106,6 +107,8 @@ pub struct FeistelNetwork {
     key: [u8; 32],
 
     rounds: u8,
+
+    ks: [u64; 4],
 }
 
 impl FeistelNetwork {
@@ -122,12 +125,18 @@ impl FeistelNetwork {
         let left_mask = right_mask << half_width;
         let num_rounds = 8 + (60 / integer_log2(max_value).unwrap().max(4));
         let num_rounds = num_rounds.min(32);
+        let k0 = u64::from_be_bytes(key[..8].try_into().unwrap());
+        let k1 = u64::from_be_bytes(key[8..16].try_into().unwrap());
+        let k2 = u64::from_be_bytes(key[16..24].try_into().unwrap());
+        let k3 = u64::from_be_bytes(key[24..32].try_into().unwrap());
+
         FeistelNetwork {
             half_width: half_width as u128,
             right_mask,
             left_mask,
             key,
             rounds: num_rounds as u8,
+            ks: [k0, k1, k2, k3],
         }
     }
 
@@ -165,7 +174,9 @@ impl FeistelNetwork {
         let right_bytes = u128::to_be_bytes(right);
         let round_bytes = u8_to_1slice(round);
 
-        let mut hasher = AHasher::default();
+        let (k0, k1, k2, k3) = (self.ks[0], self.ks[1], self.ks[2], self.ks[3]);
+
+        let mut hasher = RandomState::with_seeds(k0, k1, k2, k3).build_hasher();
         hasher.write(&key[..]);
         hasher.write(&right_bytes[..]);
         hasher.write(&round_bytes[..]);
