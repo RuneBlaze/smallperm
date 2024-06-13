@@ -1,5 +1,5 @@
 mod core;
-mod feistel;
+pub mod feistel;
 mod pyapi;
 
 use pyo3::prelude::*;

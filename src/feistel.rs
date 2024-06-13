@@ -15,10 +15,10 @@
 use ahash::AHasher;
 use core::hash::Hasher;
 
+#[derive(Debug, Clone)]
 pub struct Permutor {
     feistel: FeistelNetwork,
-    max: u128,
-    current: u128,
+    pub max: u128,
     values_returned: u128,
 }
 
@@ -28,7 +28,6 @@ impl Permutor {
         Permutor {
             feistel: FeistelNetwork::new_with_slice_key(max, key),
             max,
-            current: 0,
             values_returned: 0,
         }
     }
@@ -37,9 +36,24 @@ impl Permutor {
         Permutor {
             feistel: FeistelNetwork::new_with_slice_key(max, key),
             max,
-            current: 0,
             values_returned: 0,
         }
+    }
+
+    pub fn forward(&self, plaintext: u128) -> u128 {
+        let mut result = self.feistel.permute(plaintext);
+        while result >= self.max {
+            result = self.feistel.permute(result);
+        }
+        result
+    }
+
+    pub fn backward(&self, ciphertext: u128) -> u128 {
+        let mut result = self.feistel.invert(ciphertext);
+        while result >= self.max {
+            result = self.feistel.invert(result);
+        }
+        result
     }
 }
 
@@ -47,12 +61,8 @@ impl Iterator for Permutor {
     type Item = u128;
 
     fn next(&mut self) -> Option<Self::Item> {
-        while self.values_returned < self.max {
-            let next = self.feistel.permute(self.current);
-            self.current += 1;
-            if next >= self.max {
-                continue;
-            }
+        if self.values_returned < self.max {
+            let next = self.forward(self.values_returned);
             self.values_returned += 1;
             return Some(next);
         }
@@ -79,6 +89,7 @@ impl Iterator for Permutor {
 /// key and map each IP address to some other 32-bit IP address. We could log this new 32-bit
 /// IP address and people who do not know what the secret key is would find it difficult
 /// to determine what the input IP address was. This is Format Preserving Encryption (FPE).
+#[derive(Debug, Clone)]
 pub struct FeistelNetwork {
     /// TODO visible just for testing, fix
     pub half_width: u128,
@@ -135,6 +146,21 @@ impl FeistelNetwork {
         result & (self.left_mask | self.right_mask)
     }
 
+    pub fn invert(&self, input: u128) -> u128 {
+        let mut left = (input & self.left_mask) >> self.half_width;
+        let mut right = input & self.right_mask;
+
+        for i in (0..self.rounds).rev() {
+            let new_right = left;
+            let f = self.round_function(left, i, self.key, self.right_mask);
+            left = right ^ f;
+            right = new_right;
+        }
+
+        let result = (left << self.half_width) | right;
+        result & (self.left_mask | self.right_mask)
+    }
+
     fn round_function(&self, right: u128, round: u8, key: [u8; 32], mask: u128) -> u128 {
         let right_bytes = u128::to_be_bytes(right);
         let round_bytes = u8_to_1slice(round);
@@ -166,4 +192,77 @@ pub fn integer_log2(input: u128) -> Option<u32> {
         return None;
     }
     Some(128 - input.leading_zeros())
+}
+
+#[cfg(test)]
+mod tests {
+    use ahash::AHashSet;
+    use quickcheck::TestResult;
+    use quickcheck_macros::quickcheck;
+
+    use super::*;
+
+    #[quickcheck]
+    fn test_invert_roundtrip(u: u128, v: u128, key: u64) -> TestResult {
+        let (ub, input) = if u < v { (u, v) } else { (v, u) };
+        if ub <= input || ub == 0 {
+            return TestResult::discard();
+        }
+        let feistel = FeistelNetwork::new_with_slice_key(ub, u64_to_32slice(key));
+
+        // Test inversion for all possible inputs
+        let output = feistel.permute(input);
+        let inverted = feistel.invert(output);
+        assert_eq!(
+            inverted, input,
+            "Inversion does not produce the original input"
+        );
+        TestResult::passed()
+    }
+
+    #[quickcheck]
+    fn test_permuter_bounded(u: u128, v: u128, key: u64) -> TestResult {
+        let (ub, input) = if u < v { (u, v) } else { (v, u) };
+        if ub <= input || ub == 0 {
+            return TestResult::discard();
+        }
+        let permutor = Permutor::new_with_u64_key(ub, key);
+
+        // Test that all values returned are within the bounds
+        for value in permutor {
+            assert!(value < ub, "Value returned is not within the bounds");
+        }
+        TestResult::passed()
+    }
+
+    #[quickcheck]
+    fn test_permuter_roundtrip(u: u128, v: u128, key: u64) -> TestResult {
+        let (ub, input) = if u < v { (u, v) } else { (v, u) };
+        if ub <= input || ub == 0 {
+            return TestResult::discard();
+        }
+        let permutor = Permutor::new_with_u64_key(ub, key);
+
+        // Test that all values returned are within the bounds
+        for value in 0..ub {
+            let forward = permutor.forward(value);
+            let backward = permutor.backward(forward);
+            assert_eq!(backward, value, "Forward and backward do not match");
+        }
+        TestResult::passed()
+    }
+
+    #[quickcheck]
+    fn test_permuter_covers_all(ub: u16, key: u64) -> TestResult {
+        if ub == 0 {
+            return TestResult::discard();
+        }
+        let permutor = Permutor::new_with_u64_key(ub as u128, key);
+        let seen = AHashSet::from_iter(permutor);
+        assert_eq!(seen.len(), ub as usize, "Not all values were returned");
+        for value in 0..(ub as u128) {
+            assert!(seen.contains(&value), "Value was not returned");
+        }
+        TestResult::passed()
+    }
 }
