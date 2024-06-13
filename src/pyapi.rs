@@ -4,9 +4,8 @@ use crate::feistel::Permutor;
 
 #[pyclass]
 pub struct PseudoRandomPermutation {
-    inner: Permutor,   
+    inner: Permutor,
 }
-
 
 #[pymethods]
 impl PseudoRandomPermutation {

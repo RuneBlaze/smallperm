@@ -10,37 +10,9 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
-//! Utilities for iterating over random permutations.
-//!
-//! `permutation-iterator` provides utilities for iterating over random permutations in constant
-//! space.
-//!
-//! # Quick Start
-//!
-//! Please check the GitHub repository's `README.md` and `examples` folder for how to get started
-//! with this library.
-
-use core::hash::Hasher;
 use ahash::AHasher;
+use core::hash::Hasher;
 
-/// Permutor gives you back a permutation iterator that returns a random permutation over
-/// [0, max) (0 inclusive to max exclusive).
-///
-/// # Examples
-///
-/// Permutor can be used to iterate over a random permutation of integers [0..max) (0 inclusive to
-/// max exclusive):
-///
-/// ```
-/// use crate::permutation_iterator::Permutor;
-/// use std::collections::HashSet;
-///
-/// let max: u128 = 10;
-/// let permutor = Permutor::new(max).expect("Expected new Permutor");
-/// for value in permutor {
-///     println!("{}", value);
-/// }
-/// ```
 pub struct Permutor {
     feistel: FeistelNetwork,
     max: u128,
@@ -124,12 +96,6 @@ pub struct FeistelNetwork {
 }
 
 impl FeistelNetwork {
-    /// Create a new FeistelNetwork instance that can give you a random permutation of
-    /// integers.
-    ///
-    /// Note that the value of max is rounded up to the nearest even power of 2. If clients are
-    /// trying to get a permutation of [0, max) they need to iterate over the input range and
-    /// discard values from FeistelNetwork >= max.
     pub fn new_with_slice_key(max_value: u128, key: [u8; 32]) -> FeistelNetwork {
         let mut width = integer_log2(max_value).unwrap();
         if width % 2 != 0 {
@@ -186,47 +152,16 @@ fn u8_to_1slice(input: u8) -> [u8; 1] {
     result
 }
 
-/// Convert an unsigned 128 bit number so a slice of 16 bytes in big-endian format (most significant
-/// bit first).
-///
-/// # Examples
-///
-/// ```
-/// use crate::permutation_iterator::u128_to_16slice;
-/// let output = u128_to_16slice(42);
-/// assert_eq!(output, [0, 0, 0, 0, 0, 0, 0, 0,
-///                     0, 0, 0, 0, 0, 0, 0, 0x2A]);
-/// ```
+
 pub fn u128_to_16slice(input: u128) -> [u8; 16] {
     return u128::to_be_bytes(input);
 }
-/// Convert an unsigned 64 bit number so a slice of 8 bytes in big-endian format (most significant
-/// bit first).
-///
-/// # Examples
-///
-/// ```
-/// use crate::permutation_iterator::u64_to_8slice;
-/// let output = u64_to_8slice(42);
-/// assert_eq!(output, [0, 0, 0, 0, 0, 0, 0, 0x2A]);
-/// ```
+
 pub fn u64_to_8slice(input: u64) -> [u8; 8] {
     return u64::to_be_bytes(input);
 }
 
-/// Convert an unsigned 64 bit number so a slice of 32 bytes in big-endian format (most significant
-/// bit first).
-///
-/// # Examples
-///
-/// ```
-/// use crate::permutation_iterator::u64_to_32slice;
-/// let output = u64_to_32slice(42);
-/// assert_eq!(output, [0, 0, 0, 0, 0, 0, 0, 0x2A,
-///                     0, 0, 0, 0, 0, 0, 0, 0,
-///                     0, 0, 0, 0, 0, 0, 0, 0,
-///                     0, 0, 0, 0, 0, 0, 0, 0]);
-/// ```
+
 pub fn u64_to_32slice(input: u64) -> [u8; 32] {
     let result8 = u64_to_8slice(input);
     let mut result: [u8; 32] = [0; 32];
@@ -234,35 +169,10 @@ pub fn u64_to_32slice(input: u64) -> [u8; 32] {
     result
 }
 
-/// Calculate log2 of an integer input. This tells you how many bits are required to represent the
-/// input.
-///
-/// # Examples
-///
-/// ```
-/// use permutation_iterator::integer_log2;
-/// assert_eq!(None, integer_log2(0), "failed for {}", 0);
-/// assert_eq!(Some(1), integer_log2(1), "failed for {}", 1);
-/// assert_eq!(Some(2), integer_log2(2), "failed for {}", 2);
-/// assert_eq!(Some(2), integer_log2(3), "failed for {}", 3);
-/// assert_eq!(Some(3), integer_log2(4), "failed for {}", 4);
-/// assert_eq!(Some(3), integer_log2(5), "failed for {}", 5);
-/// assert_eq!(Some(3), integer_log2(6), "failed for {}", 6);
-/// assert_eq!(Some(3), integer_log2(7), "failed for {}", 7);
-/// assert_eq!(Some(4), integer_log2(8), "failed for {}", 8);
-/// assert_eq!(Some(4), integer_log2(9), "failed for {}", 9);
-/// assert_eq!(Some(4), integer_log2(10), "failed for {}", 9);
-/// ```
+
 pub fn integer_log2(input: u128) -> Option<u32> {
     if input == 0 {
         return None;
     }
     return Some(128 - input.leading_zeros());
-    // let mut result = 0;
-    // let mut input_copy = input;
-    // while input_copy > 0 {
-    //     input_copy >>= 1;
-    //     result += 1;
-    // }
-    // Some(result)
 }
