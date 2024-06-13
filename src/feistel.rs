@@ -24,6 +24,7 @@ pub struct Permutor {
 
 impl Permutor {
     pub fn new_with_u64_key(max: u128, key: u64) -> Permutor {
+        let key = key ^ 0xDEADBEEF_FEE1DEAD; // FIXME: No magic numbers should be put here.
         let key = u64_to_32slice(key);
         Permutor {
             feistel: FeistelNetwork::new_with_slice_key(max, key),
@@ -162,7 +163,7 @@ impl FeistelNetwork {
     }
 
     fn round_function(&self, right: u128, round: u8, key: [u8; 32], mask: u128) -> u128 {
-        let right_bytes = u128::to_be_bytes(right);
+        let right_bytes = u128::to_le_bytes(right);
         let round_bytes = u8_to_1slice(round);
         let mut hasher = FxHasher::default();
         hasher.write(&key[..]);
