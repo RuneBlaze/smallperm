@@ -1,12 +1,3 @@
-use num_prime::nt_funcs::next_prime;
-use rand::seq::SliceRandom;
-use rand::{Rng, SeedableRng};
-use rand_xoshiro::Xoshiro256PlusPlus;
-
-use rand::rngs::OsRng;
-use rand_unique::{RandomSequence, RandomSequenceBuilder};
-use std::collections::HashSet;
-
 #[cfg(test)]
 mod tests {
     use crate::feistel::integer_log2;

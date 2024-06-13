@@ -10,6 +10,8 @@
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
 
+// Modified by RuneBlaze, 2024.
+
 use ahash::AHasher;
 use core::hash::Hasher;
 
@@ -122,7 +124,7 @@ impl FeistelNetwork {
         let mut left = (input & self.left_mask) >> self.half_width;
         let mut right = input & self.right_mask;
 
-        for i in 0..self.rounds as u8 {
+        for i in 0..self.rounds {
             let new_left = right;
             let f = self.round_function(right, i, self.key, self.right_mask);
             right = left ^ f;
@@ -134,7 +136,7 @@ impl FeistelNetwork {
     }
 
     fn round_function(&self, right: u128, round: u8, key: [u8; 32], mask: u128) -> u128 {
-        let right_bytes = u128_to_16slice(right);
+        let right_bytes = u128::to_be_bytes(right);
         let round_bytes = u8_to_1slice(round);
 
         let mut hasher = AHasher::default();
@@ -152,27 +154,16 @@ fn u8_to_1slice(input: u8) -> [u8; 1] {
     result
 }
 
-
-pub fn u128_to_16slice(input: u128) -> [u8; 16] {
-    return u128::to_be_bytes(input);
-}
-
-pub fn u64_to_8slice(input: u64) -> [u8; 8] {
-    return u64::to_be_bytes(input);
-}
-
-
 pub fn u64_to_32slice(input: u64) -> [u8; 32] {
-    let result8 = u64_to_8slice(input);
+    let result8 = u64::to_be_bytes(input);
     let mut result: [u8; 32] = [0; 32];
     result[..8].clone_from_slice(&result8[..8]);
     result
 }
 
-
 pub fn integer_log2(input: u128) -> Option<u32> {
     if input == 0 {
         return None;
     }
-    return Some(128 - input.leading_zeros());
+    Some(128 - input.leading_zeros())
 }
