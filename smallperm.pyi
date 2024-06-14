@@ -64,11 +64,11 @@ class PseudoRandomPermutation:
         """
         pass
 
-def choice_ix(n: int, k: int, seed: Optional[int] = None) -> List[int]:
+def sample_ix(n: int, k: int, seed: Optional[int] = None) -> List[int]:
     """Return a list of k unique integers from 0 to n-1."""
     ...
 
-def choice(seq: Sequence[T], k: int, seed: Optional[int] = None) -> List[T]:
+def sample(seq: Sequence[T], k: int, seed: Optional[int] = None) -> List[T]:
     """Return a list of k unique elements from the input sequence."""
     ...
 
