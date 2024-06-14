@@ -4,12 +4,12 @@ A PRP uses `O(1)` memory in total and expected `O(1)` time to generate the next 
 """
 
 from collections.abc import Sequence
-from typing import List, TypeVar, Optional, Iterator
+from typing import List, TypeVar, Optional, Iterator, overload
 
 T = TypeVar("T")
 
-class PseudoRandomPermutation:
-    def __init__(self, length: int, seed: int):
+class PseudoRandomPermutation(Sequence[int]):
+    def __init__(self, length: int, seed: int | None = None):
         """
         Initialize a pseudo-random permutation generator.
 
@@ -63,6 +63,39 @@ class PseudoRandomPermutation:
             int: The index of the given element in the permutation.
         """
         pass
+
+    def __len__(self) -> int:
+        """
+        Return the length of the permutation.
+
+        Returns:
+            int: The length of the permutation.
+        """
+        pass
+
+    @property
+    def inner(self) -> EfficientPseudoRandomPermutation:
+        """
+        This method returns the underlying wrapped efficient pseudo-random permutation object.
+
+        Returns:
+            An instance of the (inner) EfficientPseudoRandomPermutation class.
+        """
+        ...
+
+    @overload
+    def __getitem__(self, i: int) -> int: ...
+    @overload
+    def __getitem__(self, i: slice) -> Sequence[int]: ...
+
+class EfficientPseudoRandomPermutation:
+    """
+    The *true* implementation of the pseudo-random permutation generator.
+
+    Has most of the same methods, except `__getitem__` is integer only.
+    """
+
+    ...
 
 def sample_ix(n: int, k: int, seed: Optional[int] = None) -> List[int]:
     """Return a list of k unique integers from 0 to n-1."""

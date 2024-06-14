@@ -1,4 +1,14 @@
-from smallperm.smallperm import PseudoRandomPermutation
-from .extras import sample_ix, sample, shuffle
+from smallperm.smallperm import (
+    PseudoRandomPermutation as EfficientPseudoRandomPermutation,
+)
 
-__all__ = ["PseudoRandomPermutation", "sample_ix", "sample", "shuffle"]
+from .extras import sample_ix, sample, shuffle
+from .wrapper import PseudoRandomPermutation
+
+__all__ = [
+    "PseudoRandomPermutation",
+    "sample_ix",
+    "sample",
+    "shuffle",
+    "EfficientPseudoRandomPermutation",
+]

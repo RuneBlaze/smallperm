@@ -1,7 +1,7 @@
 from typing import List, Sequence, TypeVar, Optional
 from random import randrange
 
-from smallperm import PseudoRandomPermutation as PRP
+from smallperm.smallperm import PseudoRandomPermutation as PRP
 
 T = TypeVar("T")
 
