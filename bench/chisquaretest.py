@@ -2,6 +2,8 @@ import numpy as np
 from scipy.stats import chisquare
 import itertools
 from smallperm import PseudoRandomPermutation
+from random_permutation import RandomPermutation
+
 
 # Fisher-Yates shuffle function
 def fisher_yates_shuffle(lst):
@@ -10,6 +12,7 @@ def fisher_yates_shuffle(lst):
         j = np.random.randint(0, i + 1)
         array[i], array[j] = array[j], array[i]
     return array
+
 
 # Function to generate permutations and count occurrences
 def generate_permutations_and_counts(shuffle_func, lst, num_shuffles):
@@ -20,12 +23,12 @@ def generate_permutations_and_counts(shuffle_func, lst, num_shuffles):
             observed_counts[shuffled] += 1
         else:
             observed_counts[shuffled] = 1
-    print(observed_counts)
     return observed_counts
+
 
 # List and number of shuffles
 lst = list(range(4))
-num_shuffles = 1000000
+num_shuffles = 100000
 
 # Generate permutations using PseudoRandomPermutation
 prp_func = lambda lst: PseudoRandomPermutation(len(lst), np.random.randint(0, 2**32))

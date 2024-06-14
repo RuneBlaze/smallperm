@@ -11,9 +11,11 @@ from random_permutation import RandomPermutation
 
 # Generate a random permutation of 1_000_000_000 elements
 # arr = np.arange(1_000_000_000)
-# np.random.seed(42)
-# np.random.shuffle(arr)
-# for _ in tqdm(arr):
+# # np.random.seed(42)
+# # np.random.shuffle(arr)
+# for i, _ in enumerate(tqdm(arr)):
+#     x = np.random.randint(i, 1_000_000_000)
+#     arr[[i, x]] = arr[[x, i]]
 #     pass
 
 perm = PseudoRandomPermutation(1_000_000_000, 42)

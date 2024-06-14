@@ -3,7 +3,10 @@ A small library to generate permutations of a list of elements using pseudo-rand
 A PRP uses `O(1)` memory in total and expected `O(1)` time to generate the next element of the permutation.
 """
 
-from typing import Iterator
+from collections.abc import Sequence
+from typing import List, TypeVar, Optional
+
+T = TypeVar("T")
 
 class PseudoRandomPermutation:
     def __init__(self, length: int, seed: int):
@@ -60,3 +63,15 @@ class PseudoRandomPermutation:
             int: The index of the given element in the permutation.
         """
         pass
+
+def choice_ix(n: int, k: int, seed: Optional[int] = None) -> List[int]:
+    """Return a list of k unique integers from 0 to n-1."""
+    ...
+
+def choice(seq: Sequence[T], k: int, seed: Optional[int] = None) -> List[T]:
+    """Return a list of k unique elements from the input sequence."""
+    ...
+
+def shuffle(seq: Sequence[T], seed: Optional[int] = None) -> List[T]:
+    """Return a shuffled copy of the input sequence."""
+    ...
