@@ -4,7 +4,7 @@ A PRP uses `O(1)` memory in total and expected `O(1)` time to generate the next 
 """
 
 from collections.abc import Sequence
-from typing import List, TypeVar, Optional
+from typing import List, TypeVar, Optional, Iterator
 
 T = TypeVar("T")
 
