@@ -6,7 +6,7 @@ Small library to generate permutations of a list of elements using pseudo-random
 ```python
 >>> from smallperm import PseudoRandomPermutation
 >>> list(PseudoRandomPermutation(42, 0xDEADBEEF))
-[14, 32, 25, 16, 0, 12, 5, 37, 30, 7, 40, 17, 27, 35, 21, 15, 1, 13, 38, 4, 9, 36, 20, 22, 24, 39, 41, 19, 3, 18, 8, 2, 29, 31, 6, 34, 11, 23, 26, 10, 28, 33]
+[30, 11, 23, 21, 39, 9, 26, 5, 27, 38, 15, 37, 31, 35, 6, 13, 34, 10, 7, 0, 12, 22, 33, 17, 41, 29, 18, 20, 3, 40, 25, 4, 19, 24, 32, 16, 36, 14, 1, 28, 2, 8]
 ```
 
 ## API
@@ -21,6 +21,11 @@ Small library to generate permutations of a list of elements using pseudo-random
   - `forward(i: int) -> int`: Returns the `i`-th element of the permutation.
   - `backward(el: int) -> int`: Returns the index of `el` in the permutation.
 
+## How
+
+We use a (somewhat) weak albeit fast symmetric cipher to generate the permutation. The resulting shuffle quality is not as high as Fisher-Yates shuffle, but it is extremely efficient. Compared to Fisher-Yates, we use `O(1)` memory (as opposed to `O(n)`, `n` the length of the shuffle); fix $$\sigma$$ a permutation (i.e., `PseudoRandomPermutation(n, seed)`) which maps $$\{0, 1, \ldots, n-1\}$$ to itself, we have $$O(1)$$ $$\sigma(x)$$ and $$\sigma^{-1}(y)$$, which can be very desirable properties in distributed ML training.
+
+Compared to naive Fisher-Yates in Python, our "give me the next card in the shuffled deck" operation is also constant-time faster. Statistically, our shuffle is not as high quality as Fisher-Yates, but it is still good enough for most applications.
 
 ## Acknowledgements
 
