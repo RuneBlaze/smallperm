@@ -12,7 +12,7 @@
 
 // Modified by RuneBlaze, 2024.
 
-use rustc_data_structures::fx::FxHasher;
+use rustc_hash::FxHasher;
 use core::hash::Hasher;
 
 #[derive(Debug, Clone)]
