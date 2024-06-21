@@ -1,6 +1,9 @@
 smallperm
 =============================
 
+[![PyPI](https://img.shields.io/pypi/v/smallperm.svg?logo=python&style=flat-square)](https://pypi.org/project/smallperm)
+
+
 Small library to generate permutations of a list of elements using pseudo-random permutations (PRP). Uses `O(1)` memory and `O(1)` time to generate the next element of the permutation.
 
 ```python
