@@ -120,6 +120,20 @@ for i in range(local_n):
   #   esp. with multiple epochs.
 ```
 
+### Infinite PRP with new shuffles per epoch
+
+```python
+from itertools import chain, count
+import numpy as np
+
+N = 10_000_000
+rng = np.random.default_rng(0xDEADBEEF)
+
+uint32_upper_bound = 0x100000000
+
+infinite_prp = chain.from_iterable(PRP(N, rng.integers(0, uint32_upper_bound)) for _ in count())
+```
+
 ## Acknowledgements
 
 Gratefully modifies and reuses code from https://github.com/asimihsan/permutation-iterator-rs which
