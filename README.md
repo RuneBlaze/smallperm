@@ -84,6 +84,42 @@ For most ML use cases this should be Pareto optimal: it is faster than Fisher-Ya
 
 We use a (somewhat) weak albeit fast symmetric cipher to generate the permutation. The resulting shuffle quality is not as high as Fisher-Yates shuffle, but it is extremely efficient. Compared to Fisher-Yates, we use `O(1)` memory (as opposed to `O(n)`, `n` the length of the shuffle); fix $\sigma$ a permutation (i.e., `PseudoRandomPermutation(n, seed)`) which maps $\{0, 1, \ldots, n-1\}$ to itself, we have $O(1)$ $\sigma(x)$ and $\sigma^{-1}(y)$, which can be very desirable properties in distributed ML training.
 
+## More examples
+
+### Shuffle non `[0, n)` sequences
+
+`PRP` is a primitive yet powerful object, and can be composed.
+
+```python
+from smallperm import PseudoRandomPermutation as PRP
+from itertools import product
+
+deck = list(product(range(4), range(13)))
+prp = PRP(len(deck), 0xDEADBEEF)
+shuffled_deck = [deck[i] for i in prp]
+```
+
+### Replacing two `random.shuffle`
+
+It is common to have two `random.shuffle` when there is a global shuffle and there is a "within-shard" shuffle.
+
+```python
+from smallperm import PseudoRandomPermutation as PRP
+
+seeds = (42, 0)
+N = 1_000_000
+local_indices = range(2, N, 8) # e.g., locally yield every 8th element
+local_n = len(local_indices)
+
+global_shuffle = PRP(N, seeds[0])
+local_shuffle = PRP(len(local_indices), seeds[1])
+
+for i in range(local_n):
+  print(global_shuffle[local_indices[local_shuffle[i]]])
+  # Compare and contrast with print(global_shuffle[local_indices[i]]),
+  #   esp. with multiple epochs.
+```
+
 ## Acknowledgements
 
 Gratefully modifies and reuses code from https://github.com/asimihsan/permutation-iterator-rs which
