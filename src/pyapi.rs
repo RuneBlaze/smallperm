@@ -10,9 +10,14 @@ pub struct PseudoRandomPermutation {
 #[pymethods]
 impl PseudoRandomPermutation {
     #[new]
-    fn new(max: u128, key: u64) -> Self {
+    fn new(max: u128, key: u64) -> PyResult<Self> {
+        if max == 0 {
+            return Err(pyo3::exceptions::PyValueError::new_err(
+                "max must be greater than 0; it does not make sense to permute 0 elements",
+            ));
+        }
         let inner = Permutor::new_with_u64_key(max, key);
-        PseudoRandomPermutation { inner }
+        Ok(PseudoRandomPermutation { inner })
     }
 
     fn __iter__(&self) -> Self {

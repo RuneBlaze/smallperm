@@ -111,7 +111,7 @@ pub struct FeistelNetwork {
 
 impl FeistelNetwork {
     pub fn new_with_slice_key(max_value: u128, key: [u8; 32]) -> FeistelNetwork {
-        let mut width = integer_log2(max_value).unwrap();
+        let mut width = integer_log2(max_value).unwrap_or(0);
         if width % 2 != 0 {
             width += 1;
         }
@@ -121,7 +121,7 @@ impl FeistelNetwork {
             right_mask |= 1 << i;
         }
         let left_mask = right_mask << half_width;
-        let num_rounds = 8 + (60 / integer_log2(max_value).unwrap().max(4));
+        let num_rounds = 8 + (60 / integer_log2(max_value).unwrap_or(0).max(4));
         let num_rounds = num_rounds.min(32);
         FeistelNetwork {
             half_width: half_width as u128,
